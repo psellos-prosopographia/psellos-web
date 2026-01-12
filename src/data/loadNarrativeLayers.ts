@@ -28,7 +28,7 @@ function parseLayers(value: unknown): string[] | null {
 
 export async function loadNarrativeLayers(
   assertionsByLayer: AssertionsByLayer,
-  layersUrl = '/dist/layers.json',
+  layersUrl = '/data/layers.json',
 ): Promise<string[]> {
   try {
     const response = await fetch(layersUrl);
