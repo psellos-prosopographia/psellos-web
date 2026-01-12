@@ -148,7 +148,7 @@ function renderPersonDetailView(
 
   const relatedAssertions = assertions.filter(
     (assertion) =>
-      assertion.subject === personId || assertion.object === personId,
+      assertion.subjectId === personId || assertion.objectId === personId,
   );
 
   if (relatedAssertions.length === 0) {
@@ -159,7 +159,9 @@ function renderPersonDetailView(
     relatedAssertions.forEach((assertion) => {
       const item = document.createElement('li');
       const otherId =
-        assertion.subject === personId ? assertion.object : assertion.subject;
+        assertion.subjectId === personId
+          ? assertion.objectId
+          : assertion.subjectId;
       const otherPerson = persons[otherId];
       const otherName =
         otherPerson?.name ??
@@ -175,8 +177,8 @@ function renderPersonDetailView(
 
       item.append(predicateLine, otherLine);
 
-      const start = assertion.start ?? assertion.start_date;
-      const end = assertion.end ?? assertion.end_date;
+      const start = assertion.raw.start ?? assertion.raw.start_date;
+      const end = assertion.raw.end ?? assertion.raw.end_date;
 
       if (start !== undefined || end !== undefined) {
         const timeLine = document.createElement('div');
