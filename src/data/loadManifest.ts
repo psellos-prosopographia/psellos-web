@@ -5,6 +5,7 @@ export interface ManifestCounts {
 
 export interface Manifest {
   spec_version: string;
+  builder_version?: string;
   counts: ManifestCounts;
   person_index: Record<string, string>;
 }
@@ -48,8 +49,12 @@ function assertManifest(value: unknown): Manifest {
     personIndex[key] = entry;
   }
 
+  const builderVersion =
+    typeof value.builder_version === 'string' ? value.builder_version : undefined;
+
   return {
     spec_version: value.spec_version,
+    builder_version: builderVersion,
     counts: {
       persons,
       assertions,

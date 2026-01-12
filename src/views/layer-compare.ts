@@ -2,6 +2,7 @@ import type { AssertionRecord } from '../data/loadAssertionsById';
 import type { AssertionsByLayer } from '../data/loadAssertionsByLayer';
 import type { LayerStats } from '../data/loadLayerStats';
 import { collectRelTypes, getAssertionRelType } from '../utils/assertions';
+import { computeDiff } from '../utils/diff';
 import { downloadJson, sanitizeLayerId } from '../utils/download';
 import type { LayerDefinition } from '../utils/layers';
 import { formatLayerLabel } from '../utils/layers';
@@ -404,39 +405,6 @@ function buildLayerOptions(layers: string[], selectedLayer: string): string[] {
   return options;
 }
 
-function computeDiff(
-  assertionsByLayer: AssertionsByLayer,
-  baseLayer: string,
-  compareLayer: string,
-): { added: string[]; removed: string[]; shared: string[] } {
-  const baseSet = new Set(assertionsByLayer[baseLayer] ?? []);
-  const compareSet = new Set(assertionsByLayer[compareLayer] ?? []);
-
-  const added: string[] = [];
-  const removed: string[] = [];
-  const shared: string[] = [];
-
-  compareSet.forEach((id) => {
-    if (!baseSet.has(id)) {
-      added.push(id);
-    } else {
-      shared.push(id);
-    }
-  });
-
-  baseSet.forEach((id) => {
-    if (!compareSet.has(id)) {
-      removed.push(id);
-    }
-  });
-
-  return {
-    added: sortAssertionIds(added),
-    removed: sortAssertionIds(removed),
-    shared: sortAssertionIds(shared),
-  };
-}
-
 function filterDiffByRelTypes(
   diff: { added: string[]; removed: string[]; shared: string[] },
   assertionsById: Record<string, AssertionRecord>,
@@ -456,10 +424,6 @@ function filterDiffByRelTypes(
     removed: diff.removed.filter(matchesRel),
     shared: diff.shared.filter(matchesRel),
   };
-}
-
-function sortAssertionIds(ids: string[]): string[] {
-  return [...ids].sort((a, b) => a.localeCompare(b));
 }
 
 function renderDiffCounts(

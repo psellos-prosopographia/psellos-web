@@ -36,6 +36,20 @@ body {
   text-decoration: underline;
 }
 
+.review-mode .site-nav {
+  display: none;
+}
+
+.review-mode .rel-filter {
+  display: none;
+}
+
+.review-mode .layer-compare__analytics,
+.review-mode .diagnostics-export,
+.review-mode .diagnostics-layers {
+  display: none;
+}
+
 .view {
   border: 1px solid #e0e0e0;
   padding: 16px;
@@ -67,6 +81,65 @@ body {
   border-radius: 8px;
   margin: 12px 0;
   background: #fcfcfc;
+}
+
+.review-panel,
+.layer-changelog {
+  border: 1px solid #e9e9e9;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 12px 0;
+  background: #fcfcfc;
+}
+
+.review-panel__summary {
+  display: grid;
+  gap: 8px;
+  align-items: start;
+}
+
+.review-panel__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.review-panel__exports {
+  margin-top: 12px;
+}
+
+.review-toggle {
+  margin: 8px 0 12px;
+}
+
+.layer-export__hash {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.layer-export__hash-value {
+  display: block;
+  padding: 8px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.layer-changelog__description {
+  margin-top: 4px;
+  color: #444;
+}
+
+.layer-changelog__list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 6px;
 }
 
 .rel-filter,

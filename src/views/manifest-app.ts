@@ -5,12 +5,15 @@ import type { Manifest } from '../data/loadManifest';
 import type { PersonRecord } from '../data/loadPersons';
 import { downloadJson, sanitizeLayerId } from '../utils/download';
 import { getAssertionRelType, collectRelTypes } from '../utils/assertions';
-import type { LayerDefinition } from '../utils/layers';
+import { computeDiff, sortAssertionIds } from '../utils/diff';
+import { computeSha256Hex } from '../utils/hash';
+import { formatLayerLabel, type LayerDefinition } from '../utils/layers';
 import { renderNarrativeLayerToggle } from './narrative-layer';
 import { renderRelTypeFilter } from './rel-filter';
 
 const LAYER_STORAGE_KEY = 'psellos.selectedLayer';
 const LAYER_QUERY_PARAM = 'layer';
+const REVIEW_QUERY_PARAM = 'review';
 
 export function renderManifestApp(
   manifest: Manifest,
@@ -31,6 +34,7 @@ export function renderManifestApp(
   let selectedPersonId: string | null = null;
   let selectedLayer = resolveInitialLayerSelection();
   let selectedRelTypes: string[] = [];
+  let isReviewMode = readReviewModeFromUrl();
 
   const narrativeToggle = renderNarrativeLayerToggle(
     availableLayers,
@@ -39,11 +43,52 @@ export function renderManifestApp(
       selectedLayer = layerId;
       persistLayerSelection(layerId);
       layerExports.update(layerId);
+      updateReviewSummary(layerId);
+      updateChangelog(layerId);
       render();
     },
   );
 
   const layerExports = createLayerExportControls(
+    selectedLayer,
+    assertionsByLayer,
+    assertionsById,
+    manifest,
+  );
+
+  const reviewToggle = createReviewModeToggle(isReviewMode, (enabled) => {
+    isReviewMode = enabled;
+    syncReviewParam(enabled);
+    setReviewModeState(enabled);
+  });
+
+  const reviewPanel = document.createElement('section');
+  reviewPanel.className = 'review-panel';
+
+  const reviewSummary = document.createElement('div');
+  reviewSummary.className = 'review-panel__summary';
+
+  const reviewMeta = document.createElement('div');
+  reviewMeta.className = 'review-panel__meta';
+
+  const reviewLayerLabel = document.createElement('span');
+  reviewLayerLabel.className = 'review-panel__layer';
+
+  const reviewAssertionCount = document.createElement('span');
+  reviewAssertionCount.className = 'review-panel__count';
+
+  reviewMeta.append(reviewLayerLabel, reviewAssertionCount);
+  reviewSummary.append(reviewMeta);
+
+  const reviewExportsSlot = document.createElement('div');
+  reviewExportsSlot.className = 'review-panel__exports';
+
+  reviewPanel.append(reviewSummary, reviewExportsSlot);
+
+  const layerExportsSlot = document.createElement('div');
+  layerExportsSlot.append(layerExports.element);
+
+  const changelogSection = createNarrativeChangelogSection(
     selectedLayer,
     assertionsByLayer,
     assertionsById,
@@ -64,10 +109,34 @@ export function renderManifestApp(
     },
   );
 
-  console.info('[psellos-web] narrative layers', {
-    availableLayers: availableLayers.map((layer) => layer.id),
-    selectedLayer,
-  });
+  if (!isReviewMode) {
+    console.info('[psellos-web] narrative layers', {
+      availableLayers: availableLayers.map((layer) => layer.id),
+      selectedLayer,
+    });
+  }
+
+  const setReviewModeState = (enabled: boolean) => {
+    document.body.classList.toggle('review-mode', enabled);
+    reviewPanel.hidden = !enabled;
+    if (enabled) {
+      reviewExportsSlot.append(layerExports.element);
+    } else {
+      layerExportsSlot.append(layerExports.element);
+    }
+  };
+
+  const updateReviewSummary = (layerId: string) => {
+    const ids = sortAssertionIds(assertionsByLayer[layerId] ?? []);
+    const layerDefinition = availableLayers.find((layer) => layer.id === layerId);
+    const label = layerDefinition ? formatLayerLabel(layerDefinition) : layerId;
+    reviewLayerLabel.textContent = `Layer: ${label || 'unknown'}`;
+    reviewAssertionCount.textContent = `Assertions: ${ids.length}`;
+  };
+
+  const updateChangelog = (layerId: string) => {
+    changelogSection.update(layerId);
+  };
 
   const render = () => {
     const allowedAssertionIds = new Set(
@@ -103,13 +172,19 @@ export function renderManifestApp(
     );
   };
 
+  updateReviewSummary(selectedLayer);
+  updateChangelog(selectedLayer);
+  setReviewModeState(isReviewMode);
   render();
 
   section.append(
     heading,
+    reviewToggle,
+    reviewPanel,
     narrativeToggle,
-    layerExports.element,
+    layerExportsSlot,
     relFilter.element,
+    changelogSection.element,
     content,
   );
   return section;
@@ -349,6 +424,7 @@ function createLayerExportControls(
   initialLayer: string,
   assertionsByLayer: AssertionsByLayer,
   assertionsById: Record<string, AssertionRecord>,
+  manifest: Manifest,
 ): { element: HTMLElement; update: (layerId: string) => void } {
   const container = document.createElement('section');
   container.className = 'layer-export';
@@ -358,6 +434,38 @@ function createLayerExportControls(
 
   const description = document.createElement('p');
   description.className = 'layer-export__description';
+
+  const hashRow = document.createElement('div');
+  hashRow.className = 'layer-export__hash';
+
+  const hashLabel = document.createElement('span');
+  hashLabel.textContent = 'Current narrative hash';
+
+  const hashValue = document.createElement('code');
+  hashValue.className = 'layer-export__hash-value';
+
+  const hashCopyButton = document.createElement('button');
+  hashCopyButton.type = 'button';
+  hashCopyButton.textContent = 'Copy hash';
+  hashCopyButton.addEventListener('click', () => {
+    const currentHash = hashValue.textContent ?? '';
+    if (!currentHash) {
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(currentHash);
+      return;
+    }
+    const selection = window.getSelection();
+    if (selection) {
+      const range = document.createRange();
+      range.selectNodeContents(hashValue);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  });
+
+  hashRow.append(hashLabel, hashValue, hashCopyButton);
 
   const buttonRow = document.createElement('div');
   buttonRow.className = 'layer-export__actions';
@@ -370,14 +478,47 @@ function createLayerExportControls(
   exportObjectsButton.type = 'button';
   exportObjectsButton.textContent = 'Export assertion objects';
 
+  const freezeButton = document.createElement('button');
+  freezeButton.type = 'button';
+  freezeButton.textContent = 'Freeze narrative';
+
+  const exportCitationsButton = document.createElement('button');
+  exportCitationsButton.type = 'button';
+  exportCitationsButton.textContent = 'Export citation bundle';
+
+  const exportChangelogButton = document.createElement('button');
+  exportChangelogButton.type = 'button';
+  exportChangelogButton.textContent = 'Export changelog vs canon';
+
   const layerRef = { current: initialLayer };
 
   const updateDescription = (layerId: string) => {
-    description.textContent = `Export data for layer: ${layerId || 'unknown'}`;
+    description.textContent = `Export data for layer: ${layerId || 'unknown'}. Freeze hashes are based on sorted assertion IDs.`;
   };
 
   const buildAssertionIds = (layerId: string) =>
     sortAssertionIds(assertionsByLayer[layerId] ?? []);
+
+  const buildArtifactVersions = () => {
+    const versions: Record<string, string> = {
+      spec: manifest.spec_version,
+    };
+    if (manifest.builder_version) {
+      versions.builder = manifest.builder_version;
+    }
+    return versions;
+  };
+
+  const updateHashRef = async (layerId: string, ids: string[]) => {
+    hashValue.textContent = 'Computing hash…';
+    const requestId = `${layerId}:${ids.length}`;
+    hashValue.dataset.requestId = requestId;
+    const hash = await computeSha256Hex(JSON.stringify(ids));
+    if (layerRef.current !== layerId || hashValue.dataset.requestId !== requestId) {
+      return;
+    }
+    hashValue.textContent = hash;
+  };
 
   exportIdsButton.addEventListener('click', () => {
     const layerId = layerRef.current;
@@ -396,19 +537,232 @@ function createLayerExportControls(
     downloadJson(filename, objects);
   });
 
+  freezeButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const ids = buildAssertionIds(layerId);
+    freezeButton.disabled = true;
+    hashValue.textContent = 'Computing hash…';
+    const requestId = `${layerId}:${ids.length}:freeze`;
+    hashValue.dataset.requestId = requestId;
+    void computeSha256Hex(JSON.stringify(ids)).then((hash) => {
+      if (layerRef.current !== layerId || hashValue.dataset.requestId !== requestId) {
+        freezeButton.disabled = false;
+        return;
+      }
+      hashValue.textContent = hash;
+      const filename = `assertions_${sanitizeLayerId(layerId)}_freeze.json`;
+      downloadJson(filename, {
+        layer: layerId,
+        assertion_ids: ids,
+        hash,
+        generated_at: new Date().toISOString(),
+        artifact_versions: buildArtifactVersions(),
+      });
+      freezeButton.disabled = false;
+    });
+  });
+
+  exportCitationsButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const ids = buildAssertionIds(layerId);
+    const assertions = ids
+      .map((id) => buildAssertionSummary(id, assertionsById))
+      .filter((entry): entry is AssertionSummary => Boolean(entry));
+    const filename = `citations_${sanitizeLayerId(layerId)}.json`;
+    downloadJson(filename, {
+      layer: layerId,
+      assertions,
+    });
+  });
+
+  exportChangelogButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    if (layerId === 'canon') {
+      return;
+    }
+    const diff = computeDiff(assertionsByLayer, 'canon', layerId);
+    const added = diff.added
+      .map((id) => buildAssertionSummary(id, assertionsById))
+      .filter((entry): entry is AssertionSummary => Boolean(entry));
+    const removed = diff.removed
+      .map((id) => buildAssertionSummary(id, assertionsById))
+      .filter((entry): entry is AssertionSummary => Boolean(entry));
+    const filename = `narrative_changelog_${sanitizeLayerId(layerId)}_vs_canon.json`;
+    downloadJson(filename, {
+      layer: layerId,
+      base: 'canon',
+      added,
+      removed,
+    });
+  });
+
   const update = (layerId: string) => {
     layerRef.current = layerId;
     updateDescription(layerId);
+    exportChangelogButton.disabled = layerId === 'canon';
+    const ids = buildAssertionIds(layerId);
+    void updateHashRef(layerId, ids);
   };
 
   update(initialLayer);
 
-  buttonRow.append(exportIdsButton, exportObjectsButton);
-  container.append(heading, description, buttonRow);
+  buttonRow.append(
+    exportIdsButton,
+    exportObjectsButton,
+    freezeButton,
+    exportCitationsButton,
+    exportChangelogButton,
+  );
+  container.append(heading, description, hashRow, buttonRow);
 
   return { element: container, update };
 }
 
-function sortAssertionIds(ids: string[]): string[] {
-  return [...ids].sort((a, b) => a.localeCompare(b));
+interface AssertionSummary {
+  id: string;
+  subject: string;
+  predicate: string;
+  object: string;
+  rel: string | null;
+  source?: unknown;
+}
+
+function buildAssertionSummary(
+  assertionId: string,
+  assertionsById: Record<string, AssertionRecord>,
+): AssertionSummary | null {
+  const assertion = assertionsById[assertionId];
+  if (!assertion) {
+    return null;
+  }
+
+  const summary: AssertionSummary = {
+    id: assertionId,
+    subject: assertion.subjectId,
+    predicate: assertion.predicate,
+    object: assertion.objectId,
+    rel: getAssertionRelType(assertion),
+  };
+
+  if ('source' in assertion.raw) {
+    summary.source = assertion.raw.source;
+  }
+
+  return summary;
+}
+
+function readReviewModeFromUrl(): boolean {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get(REVIEW_QUERY_PARAM);
+    return value === '1' || value === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function syncReviewParam(enabled: boolean): void {
+  try {
+    const url = new URL(window.location.href);
+    if (enabled) {
+      url.searchParams.set(REVIEW_QUERY_PARAM, '1');
+    } else {
+      url.searchParams.delete(REVIEW_QUERY_PARAM);
+    }
+    window.history.replaceState({}, '', url);
+  } catch {
+    // Ignore URL updates if unavailable.
+  }
+}
+
+function createReviewModeToggle(
+  initialValue: boolean,
+  onChange: (enabled: boolean) => void,
+): HTMLElement {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'review-toggle';
+
+  const label = document.createElement('label');
+  label.textContent = 'Review mode';
+
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = initialValue;
+  input.addEventListener('change', () => {
+    onChange(input.checked);
+  });
+
+  label.prepend(input);
+  wrapper.append(label);
+  return wrapper;
+}
+
+function createNarrativeChangelogSection(
+  initialLayer: string,
+  assertionsByLayer: AssertionsByLayer,
+  assertionsById: Record<string, AssertionRecord>,
+): { element: HTMLElement; update: (layerId: string) => void } {
+  const container = document.createElement('section');
+  container.className = 'layer-changelog';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Narrative changelog vs canon';
+
+  const description = document.createElement('p');
+  description.className = 'layer-changelog__description';
+
+  const addedList = document.createElement('ul');
+  addedList.className = 'layer-changelog__list';
+
+  const removedList = document.createElement('ul');
+  removedList.className = 'layer-changelog__list';
+
+  const addedSection = document.createElement('section');
+  const addedHeading = document.createElement('h4');
+  addedHeading.textContent = 'Added assertions';
+  addedSection.append(addedHeading, addedList);
+
+  const removedSection = document.createElement('section');
+  const removedHeading = document.createElement('h4');
+  removedHeading.textContent = 'Removed assertions';
+  removedSection.append(removedHeading, removedList);
+
+  const update = (layerId: string) => {
+    if (layerId === 'canon') {
+      description.textContent =
+        'Changelog is only available for non-canon layers.';
+      addedList.replaceChildren();
+      removedList.replaceChildren();
+      return;
+    }
+
+    const diff = computeDiff(assertionsByLayer, 'canon', layerId);
+    description.textContent = `Showing changes for ${layerId} vs canon.`;
+
+    const renderList = (list: HTMLElement, ids: string[]) => {
+      list.replaceChildren(
+        ...ids.map((id) => {
+          const summary = buildAssertionSummary(id, assertionsById);
+          const item = document.createElement('li');
+          if (!summary) {
+            item.textContent = id;
+            return item;
+          }
+          item.textContent = `${summary.id}: ${summary.subject} ${summary.predicate} ${summary.object}`;
+          if (summary.rel) {
+            item.textContent += ` (rel: ${summary.rel})`;
+          }
+          return item;
+        }),
+      );
+    };
+
+    renderList(addedList, diff.added);
+    renderList(removedList, diff.removed);
+  };
+
+  update(initialLayer);
+
+  container.append(heading, description, addedSection, removedSection);
+  return { element: container, update };
 }
