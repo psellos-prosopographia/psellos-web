@@ -1,5 +1,6 @@
 import type { AssertionRecord } from '../data/loadAssertionsById';
 import type { AssertionsByLayer } from '../data/loadAssertionsByLayer';
+import { downloadJson, sanitizeLayerId } from '../utils/download';
 
 const QUERY_PARAM_BASE = 'a';
 const QUERY_PARAM_COMPARE = 'b';
@@ -56,6 +57,14 @@ export function renderLayerCompareView(
 
   compareControls.append(baseControl, compareControl);
 
+  const exportControls = createDiffExportControls(
+    () => selectedBase,
+    () => selectedCompare,
+    assertionsByLayer,
+    assertionsById,
+    layers,
+  );
+
   const results = document.createElement('div');
   results.className = 'layer-compare__results';
 
@@ -67,6 +76,8 @@ export function renderLayerCompareView(
       baseValid && compareValid
         ? computeDiff(assertionsByLayer, selectedBase, selectedCompare)
         : { added: [], removed: [], shared: [] };
+
+    exportControls.update(baseValid, compareValid);
 
     const counts = renderDiffCounts(
       diff.added.length,
@@ -90,8 +101,103 @@ export function renderLayerCompareView(
 
   renderResults();
 
-  section.append(heading, description, compareControls, results);
+  section.append(heading, description, compareControls, exportControls.element, results);
   return section;
+}
+
+function createDiffExportControls(
+  getBase: () => string,
+  getCompare: () => string,
+  assertionsByLayer: AssertionsByLayer,
+  assertionsById: Record<string, AssertionRecord>,
+  layers: string[],
+): { element: HTMLElement; update: (baseValid: boolean, compareValid: boolean) => void } {
+  const container = document.createElement('section');
+  container.className = 'layer-compare__exports';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Diff exports';
+
+  const description = document.createElement('p');
+  description.className = 'layer-compare__exports-description';
+
+  const buttonRow = document.createElement('div');
+  buttonRow.className = 'layer-compare__exports-actions';
+
+  const exportSummaryButton = document.createElement('button');
+  exportSummaryButton.type = 'button';
+  exportSummaryButton.textContent = 'Export diff summary';
+
+  const exportObjectsButton = document.createElement('button');
+  exportObjectsButton.type = 'button';
+  exportObjectsButton.textContent = 'Export diff objects';
+
+  const updateDescription = () => {
+    const base = getBase();
+    const compare = getCompare();
+    description.textContent = `Export diff for ${base || 'unknown'} vs ${compare || 'unknown'}`;
+  };
+
+  const buildDiff = () => {
+    const base = getBase();
+    const compare = getCompare();
+    return computeDiff(assertionsByLayer, base, compare);
+  };
+
+  const buildFilename = (suffix: string) => {
+    const base = sanitizeLayerId(getBase());
+    const compare = sanitizeLayerId(getCompare());
+    return `assertions_diff_${base}_vs_${compare}${suffix}.json`;
+  };
+
+  exportSummaryButton.addEventListener('click', () => {
+    if (!layers.includes(getBase()) || !layers.includes(getCompare())) {
+      return;
+    }
+    const base = getBase();
+    const compare = getCompare();
+    const diff = buildDiff();
+    downloadJson(buildFilename(''), {
+      base,
+      compare,
+      added: diff.added,
+      removed: diff.removed,
+    });
+  });
+
+  exportObjectsButton.addEventListener('click', () => {
+    if (!layers.includes(getBase()) || !layers.includes(getCompare())) {
+      return;
+    }
+    const base = getBase();
+    const compare = getCompare();
+    const diff = buildDiff();
+    const added = diff.added
+      .map((id) => assertionsById[id])
+      .filter((record): record is AssertionRecord => Boolean(record));
+    const removed = diff.removed
+      .map((id) => assertionsById[id])
+      .filter((record): record is AssertionRecord => Boolean(record));
+    downloadJson(buildFilename('_objects'), {
+      base,
+      compare,
+      added,
+      removed,
+    });
+  });
+
+  const update = (baseValid: boolean, compareValid: boolean) => {
+    const disabled = !baseValid || !compareValid;
+    exportSummaryButton.disabled = disabled;
+    exportObjectsButton.disabled = disabled;
+    updateDescription();
+  };
+
+  updateDescription();
+
+  buttonRow.append(exportSummaryButton, exportObjectsButton);
+  container.append(heading, description, buttonRow);
+  return { element: container, update };
 }
 
 function pickDefaultCompareLayer(layers: string[]): string {

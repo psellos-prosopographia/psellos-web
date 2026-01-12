@@ -60,6 +60,28 @@ body {
   margin: 16px 0;
 }
 
+.layer-export,
+.layer-compare__exports {
+  border: 1px solid #e9e9e9;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 12px 0;
+  background: #fcfcfc;
+}
+
+.layer-export__actions,
+.layer-compare__exports-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layer-export__description,
+.layer-compare__exports-description {
+  margin-top: 4px;
+  color: #444;
+}
+
 .layer-compare__control {
   display: grid;
   gap: 6px;

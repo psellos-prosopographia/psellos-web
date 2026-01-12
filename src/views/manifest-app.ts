@@ -3,6 +3,7 @@ import type { AssertionsByLayer } from '../data/loadAssertionsByLayer';
 import type { AssertionsByPerson } from '../data/loadAssertionsByPerson';
 import type { Manifest } from '../data/loadManifest';
 import type { PersonRecord } from '../data/loadPersons';
+import { downloadJson, sanitizeLayerId } from '../utils/download';
 import { renderNarrativeLayerToggle } from './narrative-layer';
 
 const LAYER_STORAGE_KEY = 'psellos.selectedLayer';
@@ -34,8 +35,15 @@ export function renderManifestApp(
     (layerId) => {
       selectedLayer = layerId;
       persistLayerSelection(layerId);
+      layerExports.update(layerId);
       render();
     },
+  );
+
+  const layerExports = createLayerExportControls(
+    selectedLayer,
+    assertionsByLayer,
+    assertionsById,
   );
 
   console.info('[psellos-web] narrative layers', {
@@ -70,7 +78,7 @@ export function renderManifestApp(
 
   render();
 
-  section.append(heading, narrativeToggle, content);
+  section.append(heading, narrativeToggle, layerExports.element, content);
   return section;
 }
 
@@ -295,4 +303,72 @@ function buildLayerOptions(layers: string[]): string[] {
   return [...layers].sort((a, b) =>
     a.localeCompare(b, undefined, { sensitivity: 'base' }),
   );
+}
+
+function createLayerExportControls(
+  initialLayer: string,
+  assertionsByLayer: AssertionsByLayer,
+  assertionsById: Record<string, AssertionRecord>,
+): { element: HTMLElement; update: (layerId: string) => void } {
+  const container = document.createElement('section');
+  container.className = 'layer-export';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Layer exports';
+
+  const description = document.createElement('p');
+  description.className = 'layer-export__description';
+
+  const buttonRow = document.createElement('div');
+  buttonRow.className = 'layer-export__actions';
+
+  const exportIdsButton = document.createElement('button');
+  exportIdsButton.type = 'button';
+  exportIdsButton.textContent = 'Export assertion IDs';
+
+  const exportObjectsButton = document.createElement('button');
+  exportObjectsButton.type = 'button';
+  exportObjectsButton.textContent = 'Export assertion objects';
+
+  const layerRef = { current: initialLayer };
+
+  const updateDescription = (layerId: string) => {
+    description.textContent = `Export data for layer: ${layerId || 'unknown'}`;
+  };
+
+  const buildAssertionIds = (layerId: string) =>
+    sortAssertionIds(assertionsByLayer[layerId] ?? []);
+
+  exportIdsButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const ids = buildAssertionIds(layerId);
+    const filename = `assertions_${sanitizeLayerId(layerId)}.ids.json`;
+    downloadJson(filename, ids);
+  });
+
+  exportObjectsButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const ids = buildAssertionIds(layerId);
+    const objects = ids
+      .map((id) => assertionsById[id])
+      .filter((record): record is AssertionRecord => Boolean(record));
+    const filename = `assertions_${sanitizeLayerId(layerId)}.json`;
+    downloadJson(filename, objects);
+  });
+
+  const update = (layerId: string) => {
+    layerRef.current = layerId;
+    updateDescription(layerId);
+  };
+
+  update(initialLayer);
+
+  buttonRow.append(exportIdsButton, exportObjectsButton);
+  container.append(heading, description, buttonRow);
+
+  return { element: container, update };
+}
+
+function sortAssertionIds(ids: string[]): string[] {
+  return [...ids].sort((a, b) => a.localeCompare(b));
 }
