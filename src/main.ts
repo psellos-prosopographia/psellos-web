@@ -1,5 +1,6 @@
 import './style.css';
 import { loadAssertionsById } from './data/loadAssertionsById';
+import { loadAssertionsByLayer } from './data/loadAssertionsByLayer';
 import { loadAssertionsByPerson } from './data/loadAssertionsByPerson';
 import { loadManifest } from './data/loadManifest';
 import { loadPersons } from './data/loadPersons';
@@ -37,11 +38,25 @@ Promise.all([
   loadPersons(),
   loadAssertionsByPerson(),
   loadAssertionsById(),
+  loadAssertionsByLayer(),
 ])
-  .then(([manifest, persons, assertionsByPerson, assertionsById]) => {
+  .then(
+    ([
+      manifest,
+      persons,
+      assertionsByPerson,
+      assertionsById,
+      assertionsByLayer,
+    ]) => {
     status.textContent = 'Loaded artifacts.';
     main.append(
-      renderManifestApp(manifest, persons, assertionsByPerson, assertionsById),
+      renderManifestApp(
+        manifest,
+        persons,
+        assertionsByPerson,
+        assertionsById,
+        assertionsByLayer,
+      ),
     );
   })
   .catch((error: Error) => {

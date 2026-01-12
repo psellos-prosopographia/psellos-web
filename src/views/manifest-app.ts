@@ -1,4 +1,5 @@
 import type { AssertionRecord } from '../data/loadAssertionsById';
+import type { AssertionsByLayer } from '../data/loadAssertionsByLayer';
 import type { AssertionsByPerson } from '../data/loadAssertionsByPerson';
 import type { Manifest } from '../data/loadManifest';
 import type { PersonRecord } from '../data/loadPersons';
@@ -9,6 +10,7 @@ export function renderManifestApp(
   persons: Record<string, PersonRecord>,
   assertionsByPerson: AssertionsByPerson,
   assertionsById: Record<string, AssertionRecord>,
+  assertionsByLayer: AssertionsByLayer,
 ): HTMLElement {
   const section = document.createElement('section');
   section.className = 'view';
@@ -16,13 +18,25 @@ export function renderManifestApp(
   const heading = document.createElement('h2');
   heading.textContent = 'Manifest Overview';
 
-  const narrativeToggle = renderNarrativeLayerToggle();
-
   const content = document.createElement('div');
 
   let selectedPersonId: string | null = null;
+  let selectedLayer = 'canon';
+
+  const layerOptions = buildLayerOptions(assertionsByLayer);
+  const narrativeToggle = renderNarrativeLayerToggle(
+    layerOptions,
+    selectedLayer,
+    (layerId) => {
+      selectedLayer = layerId;
+      render();
+    },
+  );
 
   const render = () => {
+    const allowedAssertionIds = new Set(
+      assertionsByLayer[selectedLayer] ?? [],
+    );
     content.replaceChildren(
       selectedPersonId
         ? renderPersonDetailView(
@@ -30,6 +44,7 @@ export function renderManifestApp(
             persons,
             assertionsByPerson,
             assertionsById,
+            allowedAssertionIds,
             selectedPersonId,
             (id) => {
               selectedPersonId = id;
@@ -96,6 +111,7 @@ function renderPersonDetailView(
   persons: Record<string, PersonRecord>,
   assertionsByPerson: AssertionsByPerson,
   assertionsById: Record<string, AssertionRecord>,
+  allowedAssertionIds: ReadonlySet<string>,
   personId: string,
   onSelect: (id: string | null) => void,
 ): HTMLElement {
@@ -152,6 +168,7 @@ function renderPersonDetailView(
 
   const relatedAssertionIds = assertionsByPerson[personId] ?? [];
   const relatedAssertions = relatedAssertionIds
+    .filter((assertionId) => allowedAssertionIds.has(assertionId))
     .map((assertionId) => assertionsById[assertionId])
     .filter(
       (assertion): assertion is AssertionRecord => assertion !== undefined,
@@ -202,4 +219,12 @@ function renderPersonDetailView(
 
   container.append(backButton, heading, recordSection, relatedSection);
   return container;
+}
+
+function buildLayerOptions(assertionsByLayer: AssertionsByLayer): string[] {
+  const layerIds = Object.keys(assertionsByLayer);
+  if (layerIds.includes('canon')) {
+    return ['canon', ...layerIds.filter((layerId) => layerId !== 'canon')];
+  }
+  return ['canon', ...layerIds];
 }
