@@ -1,7 +1,13 @@
+import type { AssertionRecord } from '../data/loadAssertions';
 import type { Manifest } from '../data/loadManifest';
+import type { PersonRecord } from '../data/loadPersons';
 import { renderNarrativeLayerToggle } from './narrative-layer';
 
-export function renderManifestApp(manifest: Manifest): HTMLElement {
+export function renderManifestApp(
+  manifest: Manifest,
+  persons: Record<string, PersonRecord>,
+  assertions: AssertionRecord[],
+): HTMLElement {
   const section = document.createElement('section');
   section.className = 'view';
 
@@ -17,10 +23,16 @@ export function renderManifestApp(manifest: Manifest): HTMLElement {
   const render = () => {
     content.replaceChildren(
       selectedPersonId
-        ? renderPersonDetailView(manifest, selectedPersonId, (id) => {
-            selectedPersonId = id;
-            render();
-          })
+        ? renderPersonDetailView(
+            manifest,
+            persons,
+            assertions,
+            selectedPersonId,
+            (id) => {
+              selectedPersonId = id;
+              render();
+            },
+          )
         : renderHomeView(manifest, (id) => {
             selectedPersonId = id;
             render();
@@ -78,6 +90,8 @@ function renderHomeView(
 
 function renderPersonDetailView(
   manifest: Manifest,
+  persons: Record<string, PersonRecord>,
+  assertions: AssertionRecord[],
   personId: string,
   onSelect: (id: string | null) => void,
 ): HTMLElement {
@@ -91,21 +105,93 @@ function renderPersonDetailView(
   const heading = document.createElement('h3');
   heading.textContent = 'Person Detail';
 
-  const idLine = document.createElement('p');
-  idLine.textContent = `ID: ${personId}`;
+  const person = persons[personId];
+  const displayName =
+    person?.name ??
+    person?.label ??
+    manifest.person_index[personId] ??
+    'Unknown';
 
-  const displayName = manifest.person_index[personId] ?? 'Unknown';
-  const nameLine = document.createElement('p');
-  nameLine.textContent = `Display name: ${displayName}`;
+  const recordSection = document.createElement('section');
+  const recordHeading = document.createElement('h4');
+  recordHeading.textContent = 'Record';
 
-  const assertions = document.createElement('section');
-  const assertionsHeading = document.createElement('h4');
-  assertionsHeading.textContent = 'Assertions (coming next)';
-  const assertionsStub = document.createElement('p');
-  assertionsStub.textContent = 'Placeholder for assertion list.';
+  const recordList = document.createElement('dl');
 
-  assertions.append(assertionsHeading, assertionsStub);
+  const addRecordRow = (label: string, value: string) => {
+    const term = document.createElement('dt');
+    term.textContent = label;
+    const definition = document.createElement('dd');
+    definition.textContent = value;
+    recordList.append(term, definition);
+  };
 
-  container.append(backButton, heading, idLine, nameLine, assertions);
+  addRecordRow('ID', personId);
+  if (person?.type) {
+    addRecordRow('Type', person.type);
+  }
+  if (person?.name || person?.label || displayName !== 'Unknown') {
+    addRecordRow('Name', displayName);
+  }
+
+  if (!person) {
+    addRecordRow('Note', 'Person record not found in persons.json');
+  }
+
+  recordSection.append(recordHeading, recordList);
+
+  const relatedSection = document.createElement('section');
+  const relatedHeading = document.createElement('h4');
+  relatedHeading.textContent = 'Related assertions';
+
+  const relatedList = document.createElement('ul');
+
+  const relatedAssertions = assertions.filter(
+    (assertion) =>
+      assertion.subject === personId || assertion.object === personId,
+  );
+
+  if (relatedAssertions.length === 0) {
+    const empty = document.createElement('p');
+    empty.textContent = 'No related assertions found.';
+    relatedSection.append(relatedHeading, empty);
+  } else {
+    relatedAssertions.forEach((assertion) => {
+      const item = document.createElement('li');
+      const otherId =
+        assertion.subject === personId ? assertion.object : assertion.subject;
+      const otherPerson = persons[otherId];
+      const otherName =
+        otherPerson?.name ??
+        otherPerson?.label ??
+        manifest.person_index[otherId] ??
+        'Unknown';
+
+      const predicateLine = document.createElement('div');
+      predicateLine.textContent = `Predicate: ${assertion.predicate}`;
+
+      const otherLine = document.createElement('div');
+      otherLine.textContent = `Other party: ${otherName} (${otherId})`;
+
+      item.append(predicateLine, otherLine);
+
+      const start = assertion.start ?? assertion.start_date;
+      const end = assertion.end ?? assertion.end_date;
+
+      if (start !== undefined || end !== undefined) {
+        const timeLine = document.createElement('div');
+        const startText = start !== undefined ? String(start) : 'unknown';
+        const endText = end !== undefined ? String(end) : 'unknown';
+        timeLine.textContent = `Time range: ${startText} – ${endText}`;
+        item.append(timeLine);
+      }
+
+      relatedList.append(item);
+    });
+
+    relatedSection.append(relatedHeading, relatedList);
+  }
+
+  container.append(backButton, heading, recordSection, relatedSection);
   return container;
 }

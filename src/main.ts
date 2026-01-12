@@ -1,5 +1,7 @@
 import './style.css';
+import { loadAssertions } from './data/loadAssertions';
 import { loadManifest } from './data/loadManifest';
+import { loadPersons } from './data/loadPersons';
 import { renderManifestApp } from './views/manifest-app';
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -22,20 +24,20 @@ header.append(title, subtitle);
 
 const status = document.createElement('p');
 status.className = 'status';
-status.textContent = 'Loading manifest...';
+status.textContent = 'Loading artifacts...';
 
 const main = document.createElement('main');
 main.className = 'site-main';
 
 app.append(header, status, main);
 
-loadManifest()
-  .then((manifest) => {
-    status.textContent = 'Loaded manifest.';
-    main.append(renderManifestApp(manifest));
+Promise.all([loadManifest(), loadPersons(), loadAssertions()])
+  .then(([manifest, persons, assertions]) => {
+    status.textContent = 'Loaded artifacts.';
+    main.append(renderManifestApp(manifest, persons, assertions));
   })
   .catch((error: Error) => {
-    status.textContent = 'Failed to load manifest.';
+    status.textContent = 'Failed to load artifacts.';
 
     const errorMessage = document.createElement('pre');
     errorMessage.textContent = error.message;

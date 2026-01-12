@@ -1,0 +1,36 @@
+[
+  {
+    "id": "assertion_001",
+    "predicate": "studied_with",
+    "subject": "person_001",
+    "object": "person_002",
+    "start": "1090",
+    "end": "1095"
+  },
+  {
+    "id": "assertion_002",
+    "predicate": "wrote_about",
+    "subject": "person_001",
+    "object": "person_003",
+    "start": "1118"
+  },
+  {
+    "id": "assertion_003",
+    "predicate": "served_under",
+    "subject": "person_002",
+    "object": "person_003",
+    "end": "1071"
+  },
+  {
+    "id": "assertion_004",
+    "predicate": "advised",
+    "subject": "person_002",
+    "object": "person_001"
+  },
+  {
+    "id": "assertion_005",
+    "predicate": "family_of",
+    "subject": "person_003",
+    "object": "person_001"
+  }
+]

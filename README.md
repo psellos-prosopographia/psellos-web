@@ -28,9 +28,15 @@ The app does **not** read or transform raw data directly. It only consumes build
 
 Where contracts are assumed, TODOs call out the expected builder artifacts so the two systems can be aligned.
 
-## M2a manifest requirements
+## M2b artifact requirements
 
-For the current M2a slice, Psellos Web only requires `public/data/manifest.json` (copied from `psellos-builder/dist/manifest.json`). The UI reads the following fields from the manifest:
+For the M2b slice, Psellos Web expects the following artifacts under `public/data/`, copied from `psellos-builder/dist/`:
+
+- `manifest.json`
+- `persons.json`
+- `assertions.json`
+
+The UI reads the following fields from the manifest:
 
 - `spec_version` (string)
 - `counts.persons` (number)
@@ -38,6 +44,13 @@ For the current M2a slice, Psellos Web only requires `public/data/manifest.json`
 - `person_index` (object mapping person id ➜ display name)
 
 Additional fields are ignored so the UI can remain forward-compatible with future manifest expansions.
+
+The UI also reads the following minimal fields from M2b artifacts:
+
+- `persons.json`: object mapping person id ➜ record object (each record must include `id`; if `type` is present it must be a string). Name display prefers `name`, then `label`.
+- `assertions.json`: array of assertion objects (each must include `predicate`, `subject`, and `object`). Optional time range fields such as `start`, `end`, `start_date`, or `end_date` are displayed when present.
+
+Additional fields are ignored so the UI can remain forward-compatible with future artifact expansions.
 
 ## Development
 

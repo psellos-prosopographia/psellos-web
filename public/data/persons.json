@@ -1,0 +1,20 @@
+{
+  "person_001": {
+    "id": "person_001",
+    "type": "person",
+    "name": "Anna Komnene",
+    "title": "Princess and historian"
+  },
+  "person_002": {
+    "id": "person_002",
+    "type": "person",
+    "name": "Michael Psellos",
+    "title": "Scholar and court official"
+  },
+  "person_003": {
+    "id": "person_003",
+    "type": "person",
+    "name": "Romanos IV Diogenes",
+    "title": "Byzantine emperor"
+  }
+}
