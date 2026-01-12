@@ -3,11 +3,12 @@ import type { AssertionsByLayer } from '../data/loadAssertionsByLayer';
 import type { AssertionsByPerson } from '../data/loadAssertionsByPerson';
 import type { Manifest } from '../data/loadManifest';
 import type { PersonRecord } from '../data/loadPersons';
-import { downloadJson, sanitizeLayerId } from '../utils/download';
+import { downloadBlob, downloadJson, downloadText, sanitizeLayerId } from '../utils/download';
 import { getAssertionRelType, collectRelTypes } from '../utils/assertions';
 import { computeDiff, sortAssertionIds } from '../utils/diff';
 import { computeSha256Hex } from '../utils/hash';
 import { formatLayerLabel, type LayerDefinition } from '../utils/layers';
+import { createZipBlob } from '../utils/zip';
 import { renderNarrativeLayerToggle } from './narrative-layer';
 import { renderRelTypeFilter } from './rel-filter';
 
@@ -54,6 +55,7 @@ export function renderManifestApp(
     assertionsByLayer,
     assertionsById,
     manifest,
+    availableLayers,
   );
 
   const reviewToggle = createReviewModeToggle(isReviewMode, (enabled) => {
@@ -425,6 +427,7 @@ function createLayerExportControls(
   assertionsByLayer: AssertionsByLayer,
   assertionsById: Record<string, AssertionRecord>,
   manifest: Manifest,
+  availableLayers: LayerDefinition[],
 ): { element: HTMLElement; update: (layerId: string) => void } {
   const container = document.createElement('section');
   container.className = 'layer-export';
@@ -437,6 +440,9 @@ function createLayerExportControls(
 
   const hashRow = document.createElement('div');
   hashRow.className = 'layer-export__hash';
+
+  const hashRowCurrent = document.createElement('div');
+  hashRowCurrent.className = 'layer-export__hash-row';
 
   const hashLabel = document.createElement('span');
   hashLabel.textContent = 'Current narrative hash';
@@ -465,7 +471,41 @@ function createLayerExportControls(
     }
   });
 
-  hashRow.append(hashLabel, hashValue, hashCopyButton);
+  hashRowCurrent.append(hashLabel, hashValue, hashCopyButton);
+
+  const hashRowId = document.createElement('div');
+  hashRowId.className = 'layer-export__hash-row';
+
+  const narrativeIdLabel = document.createElement('span');
+  narrativeIdLabel.textContent = 'Canonical narrative ID';
+
+  const narrativeIdValue = document.createElement('code');
+  narrativeIdValue.className = 'layer-export__hash-value';
+
+  const narrativeIdCopyButton = document.createElement('button');
+  narrativeIdCopyButton.type = 'button';
+  narrativeIdCopyButton.textContent = 'Copy ID';
+  narrativeIdCopyButton.addEventListener('click', () => {
+    const currentId = narrativeIdValue.textContent ?? '';
+    if (!currentId) {
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(currentId);
+      return;
+    }
+    const selection = window.getSelection();
+    if (selection) {
+      const range = document.createRange();
+      range.selectNodeContents(narrativeIdValue);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  });
+
+  hashRowId.append(narrativeIdLabel, narrativeIdValue, narrativeIdCopyButton);
+
+  hashRow.append(hashRowCurrent, hashRowId);
 
   const buttonRow = document.createElement('div');
   buttonRow.className = 'layer-export__actions';
@@ -486,14 +526,42 @@ function createLayerExportControls(
   exportCitationsButton.type = 'button';
   exportCitationsButton.textContent = 'Export citation bundle';
 
+  const exportBibtexButton = document.createElement('button');
+  exportBibtexButton.type = 'button';
+  exportBibtexButton.textContent = 'Export BibTeX';
+
+  const exportCslButton = document.createElement('button');
+  exportCslButton.type = 'button';
+  exportCslButton.textContent = 'Export CSL-JSON';
+
   const exportChangelogButton = document.createElement('button');
   exportChangelogButton.type = 'button';
   exportChangelogButton.textContent = 'Export changelog vs canon';
 
+  const exportBundleButton = document.createElement('button');
+  exportBundleButton.type = 'button';
+  exportBundleButton.textContent = 'Download publication bundle';
+
   const layerRef = { current: initialLayer };
+  const freezeRecordsByLayer = new Map<string, FreezeRecord[]>();
+
+  const freezeSection = document.createElement('div');
+  freezeSection.className = 'layer-export__freezes';
+
+  const freezeHeading = document.createElement('h4');
+  freezeHeading.textContent = 'Frozen narratives';
+
+  const freezeEmpty = document.createElement('p');
+  freezeEmpty.className = 'layer-export__freezes-empty';
+  freezeEmpty.textContent = 'No freezes recorded for this layer yet.';
+
+  const freezeList = document.createElement('ul');
+  freezeList.className = 'layer-export__freezes-list';
+
+  freezeSection.append(freezeHeading, freezeEmpty, freezeList);
 
   const updateDescription = (layerId: string) => {
-    description.textContent = `Export data for layer: ${layerId || 'unknown'}. Freeze hashes are based on sorted assertion IDs.`;
+    description.textContent = `Export data for layer: ${layerId || 'unknown'}. Freeze hashes are based on sorted assertion IDs. Canonical narrative IDs use psellos:<layer>@<hash>.`;
   };
 
   const buildAssertionIds = (layerId: string) =>
@@ -509,8 +577,187 @@ function createLayerExportControls(
     return versions;
   };
 
+  const resolveLayerDefinition = (layerId: string) =>
+    availableLayers.find((layer) => layer.id === layerId);
+
+  const buildNarrativeId = (layerId: string, hash: string) =>
+    `psellos:${layerId}@${hash}`;
+
+  const resolveLayerTitle = (layerId: string) => {
+    const definition = resolveLayerDefinition(layerId);
+    const label = definition ? formatLayerLabel(definition) : layerId;
+    return `Narrative layer: ${label || 'unknown'}`;
+  };
+
+  const resolveLayerAbstract = (layerId: string) => {
+    const definition = resolveLayerDefinition(layerId);
+    return definition?.description;
+  };
+
+  const resolveAuthorName = () => {
+    const title = document.querySelector('h1')?.textContent?.trim();
+    return title || 'Psellos';
+  };
+
+  const resolveBaseUrl = () => {
+    try {
+      const url = new URL(window.location.href);
+      url.search = '';
+      url.hash = '';
+      return url.toString();
+    } catch {
+      return undefined;
+    }
+  };
+
+  const buildFreezeRecord = (
+    layerId: string,
+    ids: string[],
+    hash: string,
+  ): FreezeRecord => {
+    const generatedAt = new Date().toISOString();
+    return {
+      layer: layerId,
+      hash,
+      narrative_id: buildNarrativeId(layerId, hash),
+      generated_at: generatedAt,
+      assertion_count: ids.length,
+      assertion_ids: ids,
+      artifact_versions: buildArtifactVersions(),
+    };
+  };
+
+  const buildFreezePayload = (record: FreezeRecord) => ({
+    layer: record.layer,
+    hash: record.hash,
+    narrative_id: record.narrative_id,
+    generated_at: record.generated_at,
+    assertion_count: record.assertion_count,
+    assertion_ids: record.assertion_ids,
+    artifact_versions: record.artifact_versions,
+  });
+
+  const buildCitationBundle = (
+    layerId: string,
+    ids: string[],
+    hash: string,
+  ) => {
+    const assertions = ids
+      .map((id) => buildAssertionSummary(id, assertionsById))
+      .filter((entry): entry is AssertionSummary => Boolean(entry));
+    return {
+      layer: layerId,
+      hash,
+      narrative_id: buildNarrativeId(layerId, hash),
+      assertions,
+    };
+  };
+
+  const buildBibtex = (record: FreezeRecord) => {
+    const author = resolveAuthorName();
+    const year = new Date(record.generated_at).getUTCFullYear();
+    const url = resolveBaseUrl();
+    const lines = [
+      `@dataset{psellos_${sanitizeLayerId(record.layer)}_${record.hash},`,
+      `  title = {${resolveLayerTitle(record.layer)}},`,
+      `  author = {${author}},`,
+      `  year = {${year}},`,
+      `  version = {${record.hash}},`,
+    ];
+    if (url) {
+      lines.push(`  url = {${url}},`);
+    }
+    lines.push(
+      `  note = {Psellos narrative freeze; Identifier: ${record.narrative_id}}`,
+      `}`,
+    );
+    return `${lines.join('\n')}\n`;
+  };
+
+  const buildCslJson = (record: FreezeRecord) => {
+    const author = resolveAuthorName();
+    const year = new Date(record.generated_at).getUTCFullYear();
+    const url = resolveBaseUrl();
+    const abstract = resolveLayerAbstract(record.layer);
+    const payload: Record<string, unknown> = {
+      id: record.narrative_id,
+      type: 'dataset',
+      title: resolveLayerTitle(record.layer),
+      author: [{ literal: author }],
+      issued: { 'date-parts': [[year]] },
+      version: record.hash,
+    };
+    if (url) {
+      payload.URL = url;
+    }
+    if (abstract) {
+      payload.abstract = abstract;
+    }
+    return payload;
+  };
+
+  const downloadPublicationBundle = (
+    record: FreezeRecord,
+    changelog: ReturnType<typeof computeDiff> | null,
+  ) => {
+    const layerId = record.layer;
+    const sanitizedLayer = sanitizeLayerId(layerId);
+    const freezePayload = buildFreezePayload(record);
+    const citationBundle = buildCitationBundle(
+      layerId,
+      record.assertion_ids,
+      record.hash,
+    );
+    const bundleEntries = [
+      {
+        name: `narrative_freeze_${sanitizedLayer}_${record.hash}.json`,
+        data: JSON.stringify(freezePayload, null, 2),
+      },
+      {
+        name: `citations_${sanitizedLayer}_${record.hash}.json`,
+        data: JSON.stringify(citationBundle, null, 2),
+      },
+      {
+        name: `narrative_${sanitizedLayer}_${record.hash}.bib`,
+        data: buildBibtex(record),
+      },
+      {
+        name: `narrative_${sanitizedLayer}_${record.hash}.csl.json`,
+        data: JSON.stringify(buildCslJson(record), null, 2),
+      },
+    ];
+    if (changelog) {
+      const added = changelog.added
+        .map((id) => buildAssertionSummary(id, assertionsById))
+        .filter((entry): entry is AssertionSummary => Boolean(entry));
+      const removed = changelog.removed
+        .map((id) => buildAssertionSummary(id, assertionsById))
+        .filter((entry): entry is AssertionSummary => Boolean(entry));
+      bundleEntries.push({
+        name: `narrative_changelog_${sanitizedLayer}_vs_canon.json`,
+        data: JSON.stringify(
+          {
+            layer: layerId,
+            base: 'canon',
+            narrative_id: record.narrative_id,
+            added,
+            removed,
+          },
+          null,
+          2,
+        ),
+      });
+    }
+    const zipBlob = createZipBlob(bundleEntries);
+    downloadBlob(
+      `publication_bundle_${sanitizedLayer}_${record.hash}.zip`,
+      zipBlob,
+    );
+  };
+
   const updateHashRef = async (layerId: string, ids: string[]) => {
     hashValue.textContent = 'Computing hash…';
+    narrativeIdValue.textContent = '';
     const requestId = `${layerId}:${ids.length}`;
     hashValue.dataset.requestId = requestId;
     const hash = await computeSha256Hex(JSON.stringify(ids));
@@ -518,6 +765,93 @@ function createLayerExportControls(
       return;
     }
     hashValue.textContent = hash;
+    narrativeIdValue.textContent = buildNarrativeId(layerId, hash);
+  };
+
+  const renderFreezeList = (layerId: string) => {
+    const records = freezeRecordsByLayer.get(layerId) ?? [];
+    freezeList.replaceChildren();
+    freezeEmpty.hidden = records.length > 0;
+    records.forEach((record) => {
+      const item = document.createElement('li');
+      item.className = 'layer-export__freeze-item';
+
+      const meta = document.createElement('div');
+      meta.className = 'layer-export__freeze-meta';
+      meta.textContent = `Frozen at ${record.generated_at} • ${record.assertion_count} assertions`;
+
+      const hashBlock = document.createElement('code');
+      hashBlock.className = 'layer-export__freeze-hash';
+      hashBlock.textContent = record.hash;
+
+      const idBlock = document.createElement('code');
+      idBlock.className = 'layer-export__freeze-hash';
+      idBlock.textContent = record.narrative_id;
+
+      const actionRow = document.createElement('div');
+      actionRow.className = 'layer-export__freeze-actions';
+
+      const downloadFreezeButton = document.createElement('button');
+      downloadFreezeButton.type = 'button';
+      downloadFreezeButton.textContent = 'Download freeze JSON';
+      downloadFreezeButton.addEventListener('click', () => {
+        const filename = `assertions_${sanitizeLayerId(record.layer)}_freeze_${record.hash}.json`;
+        downloadJson(filename, buildFreezePayload(record));
+      });
+
+      const downloadBibtexButton = document.createElement('button');
+      downloadBibtexButton.type = 'button';
+      downloadBibtexButton.textContent = 'Export BibTeX';
+      downloadBibtexButton.addEventListener('click', () => {
+        const filename = `narrative_${sanitizeLayerId(record.layer)}_${record.hash}.bib`;
+        downloadText(filename, buildBibtex(record), 'application/x-bibtex');
+      });
+
+      const downloadCslButton = document.createElement('button');
+      downloadCslButton.type = 'button';
+      downloadCslButton.textContent = 'Export CSL-JSON';
+      downloadCslButton.addEventListener('click', () => {
+        const filename = `narrative_${sanitizeLayerId(record.layer)}_${record.hash}.csl.json`;
+        downloadJson(filename, buildCslJson(record));
+      });
+
+      const downloadBundleButton = document.createElement('button');
+      downloadBundleButton.type = 'button';
+      downloadBundleButton.textContent = 'Download publication bundle';
+      downloadBundleButton.addEventListener('click', () => {
+        const changelog =
+          record.layer === 'canon'
+            ? null
+            : computeDiff(assertionsByLayer, 'canon', record.layer);
+        downloadPublicationBundle(record, changelog);
+      });
+
+      actionRow.append(
+        downloadFreezeButton,
+        downloadBibtexButton,
+        downloadCslButton,
+        downloadBundleButton,
+      );
+
+      item.append(meta, hashBlock, idBlock, actionRow);
+      freezeList.append(item);
+    });
+  };
+
+  const addFreezeRecord = (record: FreezeRecord) => {
+    const records = freezeRecordsByLayer.get(record.layer) ?? [];
+    freezeRecordsByLayer.set(record.layer, [...records, record]);
+    if (layerRef.current === record.layer) {
+      renderFreezeList(record.layer);
+      exportBibtexButton.disabled = false;
+      exportCslButton.disabled = false;
+      exportBundleButton.disabled = false;
+    }
+  };
+
+  const getLatestFreezeRecord = (layerId: string) => {
+    const records = freezeRecordsByLayer.get(layerId) ?? [];
+    return records.at(-1);
   };
 
   exportIdsButton.addEventListener('click', () => {
@@ -542,6 +876,7 @@ function createLayerExportControls(
     const ids = buildAssertionIds(layerId);
     freezeButton.disabled = true;
     hashValue.textContent = 'Computing hash…';
+    narrativeIdValue.textContent = '';
     const requestId = `${layerId}:${ids.length}:freeze`;
     hashValue.dataset.requestId = requestId;
     void computeSha256Hex(JSON.stringify(ids)).then((hash) => {
@@ -550,14 +885,11 @@ function createLayerExportControls(
         return;
       }
       hashValue.textContent = hash;
-      const filename = `assertions_${sanitizeLayerId(layerId)}_freeze.json`;
-      downloadJson(filename, {
-        layer: layerId,
-        assertion_ids: ids,
-        hash,
-        generated_at: new Date().toISOString(),
-        artifact_versions: buildArtifactVersions(),
-      });
+      narrativeIdValue.textContent = buildNarrativeId(layerId, hash);
+      const record = buildFreezeRecord(layerId, ids, hash);
+      const filename = `assertions_${sanitizeLayerId(layerId)}_freeze_${hash}.json`;
+      downloadJson(filename, buildFreezePayload(record));
+      addFreezeRecord(record);
       freezeButton.disabled = false;
     });
   });
@@ -565,14 +897,30 @@ function createLayerExportControls(
   exportCitationsButton.addEventListener('click', () => {
     const layerId = layerRef.current;
     const ids = buildAssertionIds(layerId);
-    const assertions = ids
-      .map((id) => buildAssertionSummary(id, assertionsById))
-      .filter((entry): entry is AssertionSummary => Boolean(entry));
-    const filename = `citations_${sanitizeLayerId(layerId)}.json`;
-    downloadJson(filename, {
-      layer: layerId,
-      assertions,
+    void computeSha256Hex(JSON.stringify(ids)).then((hash) => {
+      const filename = `citations_${sanitizeLayerId(layerId)}.json`;
+      downloadJson(filename, buildCitationBundle(layerId, ids, hash));
     });
+  });
+
+  exportBibtexButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const record = getLatestFreezeRecord(layerId);
+    if (!record) {
+      return;
+    }
+    const filename = `narrative_${sanitizeLayerId(layerId)}_${record.hash}.bib`;
+    downloadText(filename, buildBibtex(record), 'application/x-bibtex');
+  });
+
+  exportCslButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const record = getLatestFreezeRecord(layerId);
+    if (!record) {
+      return;
+    }
+    const filename = `narrative_${sanitizeLayerId(layerId)}_${record.hash}.csl.json`;
+    downloadJson(filename, buildCslJson(record));
   });
 
   exportChangelogButton.addEventListener('click', () => {
@@ -587,21 +935,41 @@ function createLayerExportControls(
     const removed = diff.removed
       .map((id) => buildAssertionSummary(id, assertionsById))
       .filter((entry): entry is AssertionSummary => Boolean(entry));
-    const filename = `narrative_changelog_${sanitizeLayerId(layerId)}_vs_canon.json`;
-    downloadJson(filename, {
-      layer: layerId,
-      base: 'canon',
-      added,
-      removed,
+    const ids = buildAssertionIds(layerId);
+    void computeSha256Hex(JSON.stringify(ids)).then((hash) => {
+      const filename = `narrative_changelog_${sanitizeLayerId(layerId)}_vs_canon.json`;
+      downloadJson(filename, {
+        layer: layerId,
+        base: 'canon',
+        narrative_id: buildNarrativeId(layerId, hash),
+        added,
+        removed,
+      });
     });
+  });
+
+  exportBundleButton.addEventListener('click', () => {
+    const layerId = layerRef.current;
+    const record = getLatestFreezeRecord(layerId);
+    if (!record) {
+      return;
+    }
+    const changelog =
+      layerId === 'canon' ? null : computeDiff(assertionsByLayer, 'canon', layerId);
+    downloadPublicationBundle(record, changelog);
   });
 
   const update = (layerId: string) => {
     layerRef.current = layerId;
     updateDescription(layerId);
     exportChangelogButton.disabled = layerId === 'canon';
+    const hasFreeze = (freezeRecordsByLayer.get(layerId) ?? []).length > 0;
+    exportBibtexButton.disabled = !hasFreeze;
+    exportCslButton.disabled = !hasFreeze;
+    exportBundleButton.disabled = !hasFreeze;
     const ids = buildAssertionIds(layerId);
     void updateHashRef(layerId, ids);
+    renderFreezeList(layerId);
   };
 
   update(initialLayer);
@@ -611,11 +979,24 @@ function createLayerExportControls(
     exportObjectsButton,
     freezeButton,
     exportCitationsButton,
+    exportBibtexButton,
+    exportCslButton,
+    exportBundleButton,
     exportChangelogButton,
   );
-  container.append(heading, description, hashRow, buttonRow);
+  container.append(heading, description, hashRow, buttonRow, freezeSection);
 
   return { element: container, update };
+}
+
+interface FreezeRecord {
+  layer: string;
+  hash: string;
+  narrative_id: string;
+  generated_at: string;
+  assertion_count: number;
+  assertion_ids: string[];
+  artifact_versions: Record<string, string>;
 }
 
 interface AssertionSummary {

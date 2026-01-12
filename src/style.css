@@ -119,6 +119,11 @@ body {
   margin-bottom: 12px;
 }
 
+.layer-export__hash-row {
+  display: grid;
+  gap: 6px;
+}
+
 .layer-export__hash-value {
   display: block;
   padding: 8px;
@@ -163,6 +168,50 @@ body {
 .layer-compare__exports-description {
   margin-top: 4px;
   color: #444;
+}
+
+.layer-export__freezes {
+  margin-top: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.layer-export__freezes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.layer-export__freeze-item {
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  border-radius: 6px;
+  background: #fff;
+  display: grid;
+  gap: 8px;
+}
+
+.layer-export__freeze-meta,
+.layer-export__freezes-empty {
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.layer-export__freeze-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layer-export__freeze-hash {
+  display: block;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #fafafa;
+  word-break: break-all;
 }
 
 .layer-compare__control {
