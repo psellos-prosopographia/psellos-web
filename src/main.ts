@@ -2,10 +2,14 @@ import './style.css';
 import { loadAssertionsById } from './data/loadAssertionsById';
 import { loadAssertionsByLayer } from './data/loadAssertionsByLayer';
 import { loadAssertionsByPerson } from './data/loadAssertionsByPerson';
+import { loadLayersMeta } from './data/loadLayersMeta';
+import { loadLayerStats } from './data/loadLayerStats';
 import { loadManifest } from './data/loadManifest';
 import { loadNarrativeLayers } from './data/loadNarrativeLayers';
 import { loadPersons } from './data/loadPersons';
+import { buildLayerDefinitions } from './utils/layers';
 import { renderLayerCompareView } from './views/layer-compare';
+import { renderLayerDiagnosticsView } from './views/layer-diagnostics';
 import { renderManifestApp } from './views/manifest-app';
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -41,19 +45,27 @@ app.append(header, status, navigation, main);
 Promise.all([
   loadManifest(),
   loadPersons(),
-  loadAssertionsByPerson(),
   loadAssertionsById(),
   loadAssertionsByLayer(),
+  loadAssertionsByPerson().catch((error) => {
+    console.warn('Failed to load assertions_by_person; continuing.', error);
+    return null;
+  }),
+  loadLayersMeta(),
+  loadLayerStats(),
 ])
   .then(
     async ([
       manifest,
       persons,
-      assertionsByPerson,
       assertionsById,
       assertionsByLayer,
+      assertionsByPerson,
+      layersMeta,
+      layerStats,
     ]) => {
       const narrativeLayers = await loadNarrativeLayers(assertionsByLayer);
+      const layerDefinitions = buildLayerDefinitions(narrativeLayers, layersMeta);
       status.textContent = 'Loaded artifacts.';
 
       const content = document.createElement('div');
@@ -71,7 +83,7 @@ Promise.all([
               assertionsByPerson,
               assertionsById,
               assertionsByLayer,
-              narrativeLayers,
+              layerDefinitions,
             ),
         },
         {
@@ -81,7 +93,21 @@ Promise.all([
             renderLayerCompareView(
               assertionsByLayer,
               assertionsById,
-              narrativeLayers,
+              layerDefinitions,
+              layerStats,
+            ),
+        },
+        {
+          id: 'diagnostics',
+          label: 'Diagnostics',
+          render: () =>
+            renderLayerDiagnosticsView(
+              layerDefinitions,
+              assertionsByLayer,
+              assertionsById,
+              assertionsByPerson,
+              persons,
+              layerStats,
             ),
         },
       ] as const;

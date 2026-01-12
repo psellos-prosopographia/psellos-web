@@ -4,7 +4,10 @@ import type { AssertionsByPerson } from '../data/loadAssertionsByPerson';
 import type { Manifest } from '../data/loadManifest';
 import type { PersonRecord } from '../data/loadPersons';
 import { downloadJson, sanitizeLayerId } from '../utils/download';
+import { getAssertionRelType, collectRelTypes } from '../utils/assertions';
+import type { LayerDefinition } from '../utils/layers';
 import { renderNarrativeLayerToggle } from './narrative-layer';
+import { renderRelTypeFilter } from './rel-filter';
 
 const LAYER_STORAGE_KEY = 'psellos.selectedLayer';
 const LAYER_QUERY_PARAM = 'layer';
@@ -12,10 +15,10 @@ const LAYER_QUERY_PARAM = 'layer';
 export function renderManifestApp(
   manifest: Manifest,
   persons: Record<string, PersonRecord>,
-  assertionsByPerson: AssertionsByPerson,
+  assertionsByPerson: AssertionsByPerson | null,
   assertionsById: Record<string, AssertionRecord>,
   assertionsByLayer: AssertionsByLayer,
-  availableLayers: string[],
+  availableLayers: LayerDefinition[],
 ): HTMLElement {
   const section = document.createElement('section');
   section.className = 'view';
@@ -27,10 +30,10 @@ export function renderManifestApp(
 
   let selectedPersonId: string | null = null;
   let selectedLayer = resolveInitialLayerSelection();
+  let selectedRelTypes: string[] = [];
 
-  const layerOptions = buildLayerOptions(availableLayers);
   const narrativeToggle = renderNarrativeLayerToggle(
-    layerOptions,
+    availableLayers,
     selectedLayer,
     (layerId) => {
       selectedLayer = layerId;
@@ -46,8 +49,23 @@ export function renderManifestApp(
     assertionsById,
   );
 
+  const relTypes = collectRelTypes(assertionsById);
+  const relFilter = renderRelTypeFilter(
+    relTypes,
+    selectedRelTypes,
+    (selection) => {
+      selectedRelTypes = selection;
+      render();
+    },
+    {
+      label: 'Relationship type filter',
+      description:
+        'Show assertions only when their extensions.psellos.rel type matches.',
+    },
+  );
+
   console.info('[psellos-web] narrative layers', {
-    availableLayers: layerOptions,
+    availableLayers: availableLayers.map((layer) => layer.id),
     selectedLayer,
   });
 
@@ -55,6 +73,14 @@ export function renderManifestApp(
     const allowedAssertionIds = new Set(
       assertionsByLayer[selectedLayer] ?? [],
     );
+    const relTypeSet = new Set(selectedRelTypes);
+    const isRelMatch = (assertionId: string) => {
+      if (relTypeSet.size === 0) {
+        return true;
+      }
+      const relType = getAssertionRelType(assertionsById[assertionId]);
+      return relType !== null && relTypeSet.has(relType);
+    };
     content.replaceChildren(
       selectedPersonId
         ? renderPersonDetailView(
@@ -63,6 +89,7 @@ export function renderManifestApp(
             assertionsByPerson,
             assertionsById,
             allowedAssertionIds,
+            isRelMatch,
             selectedPersonId,
             (id) => {
               selectedPersonId = id;
@@ -78,7 +105,13 @@ export function renderManifestApp(
 
   render();
 
-  section.append(heading, narrativeToggle, layerExports.element, content);
+  section.append(
+    heading,
+    narrativeToggle,
+    layerExports.element,
+    relFilter.element,
+    content,
+  );
   return section;
 }
 
@@ -187,9 +220,10 @@ function renderHomeView(
 function renderPersonDetailView(
   manifest: Manifest,
   persons: Record<string, PersonRecord>,
-  assertionsByPerson: AssertionsByPerson,
+  assertionsByPerson: AssertionsByPerson | null,
   assertionsById: Record<string, AssertionRecord>,
   allowedAssertionIds: ReadonlySet<string>,
+  isRelMatch: (assertionId: string) => boolean,
   personId: string,
   onSelect: (id: string | null) => void,
 ): HTMLElement {
@@ -244,9 +278,12 @@ function renderPersonDetailView(
 
   const relatedList = document.createElement('ul');
 
-  const relatedAssertionIds = assertionsByPerson[personId] ?? [];
+  const relatedAssertionIds = assertionsByPerson?.[personId] ?? [];
   const relatedAssertions = relatedAssertionIds
-    .filter((assertionId) => allowedAssertionIds.has(assertionId))
+    .filter(
+      (assertionId) =>
+        allowedAssertionIds.has(assertionId) && isRelMatch(assertionId),
+    )
     .map((assertionId) => assertionsById[assertionId])
     .filter(
       (assertion): assertion is AssertionRecord => assertion !== undefined,
@@ -254,7 +291,9 @@ function renderPersonDetailView(
 
   if (relatedAssertions.length === 0) {
     const empty = document.createElement('p');
-    empty.textContent = 'No related assertions found.';
+    empty.textContent = assertionsByPerson
+      ? 'No related assertions found.'
+      : 'Related assertions unavailable (missing assertions_by_person).';
     relatedSection.append(relatedHeading, empty);
   } else {
     relatedAssertions.forEach((assertion) => {
@@ -278,6 +317,13 @@ function renderPersonDetailView(
 
       item.append(predicateLine, otherLine);
 
+      const relType = getAssertionRelType(assertion);
+      if (relType) {
+        const relLine = document.createElement('div');
+        relLine.textContent = `Relationship type: ${relType}`;
+        item.append(relLine);
+      }
+
       const start = assertion.raw.start ?? assertion.raw.start_date;
       const end = assertion.raw.end ?? assertion.raw.end_date;
 
@@ -297,12 +343,6 @@ function renderPersonDetailView(
 
   container.append(backButton, heading, recordSection, relatedSection);
   return container;
-}
-
-function buildLayerOptions(layers: string[]): string[] {
-  return [...layers].sort((a, b) =>
-    a.localeCompare(b, undefined, { sensitivity: 'base' }),
-  );
 }
 
 function createLayerExportControls(
