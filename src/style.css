@@ -1,0 +1,42 @@
+:root {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1a1a1a;
+  background-color: #ffffff;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+}
+
+#app {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.site-header h1 {
+  margin-bottom: 4px;
+}
+
+.site-main {
+  display: grid;
+  gap: 24px;
+}
+
+.view {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+}
+
+.todo {
+  font-style: italic;
+}
+
+.status {
+  margin: 12px 0 24px;
+}
+
+.error {
+  white-space: pre-wrap;
+  color: #a00000;
+}
