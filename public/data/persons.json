@@ -1,20 +1,267 @@
 {
-  "person_001": {
-    "id": "person_001",
-    "type": "person",
-    "name": "Anna Komnene",
-    "title": "Princess and historian"
+  "Q1219238": {
+    "entity_type": "person",
+    "id": "Q1219238",
+    "label": "John Tzelepes Komnenos"
   },
-  "person_002": {
-    "id": "person_002",
-    "type": "person",
-    "name": "Michael Psellos",
-    "title": "Scholar and court official"
+  "Q1226596": {
+    "entity_type": "person",
+    "id": "Q1226596",
+    "label": "Manuel Komnenos"
   },
-  "person_003": {
-    "id": "person_003",
-    "type": "person",
-    "name": "Romanos IV Diogenes",
-    "title": "Byzantine emperor"
+  "Q1226606": {
+    "entity_type": "person",
+    "id": "Q1226606",
+    "label": "Alexios Komnenos"
+  },
+  "Q12272034": {
+    "entity_type": "person",
+    "id": "Q12272034",
+    "label": "Andronikos Komnenos"
+  },
+  "Q1227872": {
+    "entity_type": "person",
+    "id": "Q1227872",
+    "label": "Andronikos Komnenos"
+  },
+  "Q12279392": {
+    "entity_type": "person",
+    "id": "Q12279392",
+    "label": "Eudokia Komnene"
+  },
+  "Q122802384": {
+    "entity_type": "person",
+    "id": "Q122802384",
+    "label": "Anna Komnene"
+  },
+  "Q12286002": {
+    "entity_type": "person",
+    "id": "Q12286002",
+    "label": "Maria Komnene"
+  },
+  "Q12286004": {
+    "entity_type": "person",
+    "id": "Q12286004",
+    "label": "Maria Komnene"
+  },
+  "Q12296185": {
+    "entity_type": "person",
+    "id": "Q12296185",
+    "label": "Theodora Komnene"
+  },
+  "Q1235662": {
+    "entity_type": "person",
+    "id": "Q1235662",
+    "label": "Isaac Komnenos"
+  },
+  "Q126717816": {
+    "entity_type": "person",
+    "id": "Q126717816",
+    "label": "Maria Komnene"
+  },
+  "Q12900494": {
+    "entity_type": "person",
+    "id": "Q12900494",
+    "label": "John Komnenos"
+  },
+  "Q12900547": {
+    "entity_type": "person",
+    "id": "Q12900547",
+    "label": "Irene Komnene"
+  },
+  "Q130681251": {
+    "entity_type": "person",
+    "id": "Q130681251",
+    "label": "John Doukas"
+  },
+  "Q131568681": {
+    "entity_type": "person",
+    "id": "Q131568681",
+    "label": "Eirene Doukaina"
+  },
+  "Q179284": {
+    "entity_type": "person",
+    "id": "Q179284",
+    "label": "Anna Komnene"
+  },
+  "Q18410116": {
+    "entity_type": "person",
+    "id": "Q18410116",
+    "label": "Alexios Komnenos"
+  },
+  "Q18712843": {
+    "entity_type": "person",
+    "id": "Q18712843",
+    "label": "Alexios Charon"
+  },
+  "Q20498724": {
+    "entity_type": "person",
+    "id": "Q20498724",
+    "label": "Theodora Komnene"
+  },
+  "Q20498884": {
+    "entity_type": "person",
+    "id": "Q20498884",
+    "label": "Anna Komnene"
+  },
+  "Q232714": {
+    "entity_type": "person",
+    "id": "Q232714",
+    "label": "Irene Doukaina"
+  },
+  "Q238609": {
+    "entity_type": "person",
+    "id": "Q238609",
+    "label": "Constance of Antioch"
+  },
+  "Q240604": {
+    "entity_type": "person",
+    "id": "Q240604",
+    "label": "Maria of Antioch"
+  },
+  "Q246434": {
+    "entity_type": "person",
+    "id": "Q246434",
+    "label": "Isaac Komnenos"
+  },
+  "Q28729593": {
+    "entity_type": "person",
+    "id": "Q28729593",
+    "label": "Eudokia Komnene"
+  },
+  "Q291231": {
+    "entity_type": "person",
+    "id": "Q291231",
+    "label": "Maria Komnene"
+  },
+  "Q3286784": {
+    "entity_type": "person",
+    "id": "Q3286784",
+    "label": "Manuel Komnenos"
+  },
+  "Q3292878": {
+    "entity_type": "person",
+    "id": "Q3292878",
+    "label": "Maria of Bulgaria"
+  },
+  "Q3624362": {
+    "entity_type": "person",
+    "id": "Q3624362",
+    "label": "Adrianos Komnenos"
+  },
+  "Q3767041": {
+    "entity_type": "person",
+    "id": "Q3767041",
+    "label": "John Komnenos"
+  },
+  "Q392653": {
+    "entity_type": "person",
+    "id": "Q392653",
+    "label": "Isaac Komnenos"
+  },
+  "Q4103592": {
+    "entity_type": "person",
+    "id": "Q4103592",
+    "label": "Barbara Komnena"
+  },
+  "Q41600": {
+    "entity_type": "person",
+    "id": "Q41600",
+    "label": "Alexios I Komnenos"
+  },
+  "Q41610": {
+    "entity_type": "person",
+    "id": "Q41610",
+    "label": "Manuel I Komnenos"
+  },
+  "Q41628": {
+    "entity_type": "person",
+    "id": "Q41628",
+    "label": "John II Komnenos"
+  },
+  "Q41643": {
+    "entity_type": "person",
+    "id": "Q41643",
+    "label": "Isaac I Komnenos"
+  },
+  "Q41830": {
+    "entity_type": "person",
+    "id": "Q41830",
+    "label": "Andronikos I Komnenos"
+  },
+  "Q41849": {
+    "entity_type": "person",
+    "id": "Q41849",
+    "label": "Alexios II Komnenos"
+  },
+  "Q437271": {
+    "entity_type": "person",
+    "id": "Q437271",
+    "label": "Raymond of Poitiers"
+  },
+  "Q513495": {
+    "entity_type": "person",
+    "id": "Q513495",
+    "label": "Andronikos Doukas"
+  },
+  "Q52219392": {
+    "entity_type": "person",
+    "id": "Q52219392",
+    "label": "Nikephoros Komnenos"
+  },
+  "Q548798": {
+    "entity_type": "person",
+    "id": "Q548798",
+    "label": "Alexios Komnenos"
+  },
+  "Q60036404": {
+    "entity_type": "person",
+    "id": "Q60036404",
+    "label": "Maria Komnene"
+  },
+  "Q61140127": {
+    "entity_type": "person",
+    "id": "Q61140127",
+    "label": "Eudokia Komnene"
+  },
+  "Q61570544": {
+    "entity_type": "person",
+    "id": "Q61570544",
+    "label": "Adriana Dalassena"
+  },
+  "Q641370": {
+    "entity_type": "person",
+    "id": "Q641370",
+    "label": "Anna Dalassene"
+  },
+  "Q6752551": {
+    "entity_type": "person",
+    "id": "Q6752551",
+    "label": "Manuel Erotikos Komnenos"
+  },
+  "Q75571126": {
+    "entity_type": "person",
+    "id": "Q75571126",
+    "label": "unknown daughter Comnene"
+  },
+  "Q765682": {
+    "entity_type": "person",
+    "id": "Q765682",
+    "label": "Theodora Komnene Angelina"
+  },
+  "Q80465480": {
+    "entity_type": "person",
+    "id": "Q80465480",
+    "label": "Alexios Komnenos"
+  },
+  "Q82691": {
+    "entity_type": "person",
+    "id": "Q82691",
+    "label": "Irene of Hungary"
+  },
+  "Q90040312": {
+    "entity_type": "person",
+    "id": "Q90040312",
+    "label": "unknown daughter of Manuel Erotikos Komnenos"
   }
 }

@@ -1,0 +1,216 @@
+{
+  "assertion_count_by_layer": {
+    "canon": 64,
+    "editorial_demo": 1
+  },
+  "compare_to_canon": {
+    "editorial_demo": {
+      "added_count": 1,
+      "added_persons_topN": [
+        {
+          "count": 1,
+          "personId": "Q238609"
+        },
+        {
+          "count": 1,
+          "personId": "Q240604"
+        }
+      ],
+      "added_rel_count_by_type": {
+        "genealogy": 1
+      },
+      "removed_count": 64,
+      "removed_persons_topN": [
+        {
+          "count": 11,
+          "personId": "Q41628"
+        },
+        {
+          "count": 10,
+          "personId": "Q41600"
+        },
+        {
+          "count": 10,
+          "personId": "Q641370"
+        },
+        {
+          "count": 9,
+          "personId": "Q3767041"
+        },
+        {
+          "count": 8,
+          "personId": "Q232714"
+        },
+        {
+          "count": 6,
+          "personId": "Q41830"
+        },
+        {
+          "count": 5,
+          "personId": "Q179284"
+        },
+        {
+          "count": 5,
+          "personId": "Q392653"
+        },
+        {
+          "count": 5,
+          "personId": "Q41610"
+        },
+        {
+          "count": 3,
+          "personId": "Q240604"
+        },
+        {
+          "count": 3,
+          "personId": "Q6752551"
+        },
+        {
+          "count": 2,
+          "personId": "Q12272034"
+        },
+        {
+          "count": 2,
+          "personId": "Q12296185"
+        },
+        {
+          "count": 2,
+          "personId": "Q246434"
+        },
+        {
+          "count": 2,
+          "personId": "Q28729593"
+        },
+        {
+          "count": 2,
+          "personId": "Q3286784"
+        },
+        {
+          "count": 2,
+          "personId": "Q3624362"
+        },
+        {
+          "count": 2,
+          "personId": "Q41849"
+        },
+        {
+          "count": 2,
+          "personId": "Q52219392"
+        },
+        {
+          "count": 2,
+          "personId": "Q60036404"
+        }
+      ],
+      "removed_rel_count_by_type": {
+        "genealogy": 64
+      }
+    }
+  },
+  "person_count_by_layer": {
+    "canon": 53,
+    "editorial_demo": 2
+  },
+  "rel_count_by_layer": {
+    "canon": {
+      "genealogy": 64
+    },
+    "editorial_demo": {
+      "genealogy": 1
+    }
+  },
+  "top_persons_by_layer": {
+    "canon": [
+      {
+        "count": 11,
+        "personId": "Q41628"
+      },
+      {
+        "count": 10,
+        "personId": "Q41600"
+      },
+      {
+        "count": 10,
+        "personId": "Q641370"
+      },
+      {
+        "count": 9,
+        "personId": "Q3767041"
+      },
+      {
+        "count": 8,
+        "personId": "Q232714"
+      },
+      {
+        "count": 6,
+        "personId": "Q41830"
+      },
+      {
+        "count": 5,
+        "personId": "Q179284"
+      },
+      {
+        "count": 5,
+        "personId": "Q392653"
+      },
+      {
+        "count": 5,
+        "personId": "Q41610"
+      },
+      {
+        "count": 3,
+        "personId": "Q240604"
+      },
+      {
+        "count": 3,
+        "personId": "Q6752551"
+      },
+      {
+        "count": 2,
+        "personId": "Q12272034"
+      },
+      {
+        "count": 2,
+        "personId": "Q12296185"
+      },
+      {
+        "count": 2,
+        "personId": "Q246434"
+      },
+      {
+        "count": 2,
+        "personId": "Q28729593"
+      },
+      {
+        "count": 2,
+        "personId": "Q3286784"
+      },
+      {
+        "count": 2,
+        "personId": "Q3624362"
+      },
+      {
+        "count": 2,
+        "personId": "Q41849"
+      },
+      {
+        "count": 2,
+        "personId": "Q52219392"
+      },
+      {
+        "count": 2,
+        "personId": "Q60036404"
+      }
+    ],
+    "editorial_demo": [
+      {
+        "count": 1,
+        "personId": "Q238609"
+      },
+      {
+        "count": 1,
+        "personId": "Q240604"
+      }
+    ]
+  }
+}

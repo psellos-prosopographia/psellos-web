@@ -1,36 +1,847 @@
 {
-  "assertion_001": {
-    "id": "assertion_001",
-    "predicate": "studied_with",
-    "subject": "person_001",
-    "object": "person_002",
-    "start": "1090",
-    "end": "1095"
+  "0062534753c609c9ef513ca0957c4f90923d1e9b": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "0062534753c609c9ef513ca0957c4f90923d1e9b",
+    "object": "Q240604",
+    "predicate": "parent_of",
+    "subject": "Q238609"
   },
-  "assertion_002": {
-    "id": "assertion_002",
-    "predicate": "wrote_about",
-    "subject": "person_001",
-    "object": "person_003",
-    "start": "1118"
+  "0b41bbf3837a0429ec20da094e56336d8c00af8e": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "0b41bbf3837a0429ec20da094e56336d8c00af8e",
+    "object": "Q179284",
+    "predicate": "parent_of",
+    "subject": "Q232714"
   },
-  "assertion_003": {
-    "id": "assertion_003",
-    "predicate": "served_under",
-    "subject": "person_002",
-    "object": "person_003",
-    "end": "1071"
+  "19d534bc2d6a6381872fc5016b72de8275b39737": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "19d534bc2d6a6381872fc5016b72de8275b39737",
+    "object": "Q41830",
+    "predicate": "parent_of",
+    "subject": "Q392653"
   },
-  "assertion_004": {
-    "id": "assertion_004",
-    "predicate": "advised",
-    "subject": "person_002",
-    "object": "person_001"
+  "214d9a9b1bc449b365a7bdc044c2a707162263d0": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "214d9a9b1bc449b365a7bdc044c2a707162263d0",
+    "object": "Q641370",
+    "predicate": "parent_of",
+    "subject": "Q18712843"
   },
-  "assertion_005": {
-    "id": "assertion_005",
-    "predicate": "family_of",
-    "subject": "person_003",
-    "object": "person_001"
+  "22efa320d4f524679c4fbee5a9cd166198e5b41a": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "22efa320d4f524679c4fbee5a9cd166198e5b41a",
+    "object": "Q61140127",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "2391c33ff1d6540ade6e15a17ef8f126552560a7": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "2391c33ff1d6540ade6e15a17ef8f126552560a7",
+    "object": "Q52219392",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "2e9fea4b5294bb807ec42d93e220c5b50fef055a": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "2e9fea4b5294bb807ec42d93e220c5b50fef055a",
+    "object": "Q240604",
+    "predicate": "parent_of",
+    "subject": "Q437271"
+  },
+  "356bfedb7df63cea816284fceb2571842b8f9985": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "356bfedb7df63cea816284fceb2571842b8f9985",
+    "object": "Q41643",
+    "predicate": "parent_of",
+    "subject": "Q6752551"
+  },
+  "3883b2f2603a85b9afac07a7bcb733a0d94a27dd": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "3883b2f2603a85b9afac07a7bcb733a0d94a27dd",
+    "object": "Q4103592",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "3b8ad6135524784becb960e71ee46777e03d89f5": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "3b8ad6135524784becb960e71ee46777e03d89f5",
+    "object": "Q548798",
+    "predicate": "parent_of",
+    "subject": "Q41830"
+  },
+  "40b1b9fbf9c711c432b329366c1fea3ffc4aab38": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "40b1b9fbf9c711c432b329366c1fea3ffc4aab38",
+    "object": "Q75571126",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "41ea24f9a99b8a5f585b338ce8831efe06aaf52e": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "41ea24f9a99b8a5f585b338ce8831efe06aaf52e",
+    "object": "Q41610",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "432285dafef9b881ef80b2e44e1f68574a1229fb": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "432285dafef9b881ef80b2e44e1f68574a1229fb",
+    "object": "Q1235662",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "4523d7a72efab67453bd6a863852ca88d21b58ab": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "4523d7a72efab67453bd6a863852ca88d21b58ab",
+    "object": "Q3624362",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "48f0c800d8a2e80e830dddc8aa0d2f5c8ea75513": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "48f0c800d8a2e80e830dddc8aa0d2f5c8ea75513",
+    "object": "Q12272034",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "492175d0b78d26cfcf556f99553426703c47dc67": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "492175d0b78d26cfcf556f99553426703c47dc67",
+    "object": "Q1226596",
+    "predicate": "parent_of",
+    "subject": "Q41830"
+  },
+  "4a236d0332568086fa2df682e70ef30184c3bd81": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "4a236d0332568086fa2df682e70ef30184c3bd81",
+    "object": "Q3767041",
+    "predicate": "parent_of",
+    "subject": "Q6752551"
+  },
+  "4bfc610e07b49b808c1cfabc8b663f21dc005641": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "4bfc610e07b49b808c1cfabc8b663f21dc005641",
+    "object": "Q61140127",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "4d95a20c0513af4c474bfc2be5f171d23191aa84": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "4d95a20c0513af4c474bfc2be5f171d23191aa84",
+    "object": "Q12272034",
+    "predicate": "parent_of",
+    "subject": "Q232714"
+  },
+  "4ea6867e67612b14430cfe332ed13400094a316a": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "4ea6867e67612b14430cfe332ed13400094a316a",
+    "object": "Q18410116",
+    "predicate": "parent_of",
+    "subject": "Q41610"
+  },
+  "54727a1a9b2f3d80f577bb0f8c6b5cdb35aadb90": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "54727a1a9b2f3d80f577bb0f8c6b5cdb35aadb90",
+    "object": "Q3286784",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "56967714b312bb9147c860cf929b0107e29b0bfe": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "56967714b312bb9147c860cf929b0107e29b0bfe",
+    "object": "Q126717816",
+    "predicate": "parent_of",
+    "subject": "Q41830"
+  },
+  "579d7505cd59c6773eddabeada7946dcc46d37f2": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "579d7505cd59c6773eddabeada7946dcc46d37f2",
+    "object": "Q12900547",
+    "predicate": "parent_of",
+    "subject": "Q41830"
+  },
+  "5aa383efefaa45c570ac7b50b69f7914060a01aa": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "5aa383efefaa45c570ac7b50b69f7914060a01aa",
+    "object": "Q12286004",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "5cc8ea1ffaf8f36ec34407eb8dfaebfe98945b00": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "5cc8ea1ffaf8f36ec34407eb8dfaebfe98945b00",
+    "object": "Q179284",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "600d968cf68144bd8889ca591da16d865bbb422d": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "600d968cf68144bd8889ca591da16d865bbb422d",
+    "object": "Q122802384",
+    "predicate": "parent_of",
+    "subject": "Q392653"
+  },
+  "630ac91e7a40ae545b3fc26b3cae975978e0497f": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "630ac91e7a40ae545b3fc26b3cae975978e0497f",
+    "object": "Q41849",
+    "predicate": "parent_of",
+    "subject": "Q240604"
+  },
+  "64da111a20e5924adea44529fbf78bfbe591dde9": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "64da111a20e5924adea44529fbf78bfbe591dde9",
+    "object": "Q28729593",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "6540b6c70ea6a239376cedc2f8fd7ff53ca73d96": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "6540b6c70ea6a239376cedc2f8fd7ff53ca73d96",
+    "object": "Q20498884",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "67d8ed979c945b56f12b0d03141423104bbbcd9f": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "67d8ed979c945b56f12b0d03141423104bbbcd9f",
+    "object": "Q392653",
+    "predicate": "parent_of",
+    "subject": "Q232714"
+  },
+  "686875c3fe35a49ec281f085f56ad1f0694c65f4": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "686875c3fe35a49ec281f085f56ad1f0694c65f4",
+    "object": "Q3624362",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "6f0cbc44513b6747efdd76149e8ccf12629a3daf": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "6f0cbc44513b6747efdd76149e8ccf12629a3daf",
+    "object": "Q291231",
+    "predicate": "parent_of",
+    "subject": "Q41610"
+  },
+  "7a6be5f9a0bebf152ca2623a4863f863c0b869ec": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "7a6be5f9a0bebf152ca2623a4863f863c0b869ec",
+    "object": "Q41600",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "830a0b95cd309199a4964b6dbdf371c76068601d": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "830a0b95cd309199a4964b6dbdf371c76068601d",
+    "object": "Q246434",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "8872f4e957fc1b07a0d72837e7bf3955babaf72b": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "8872f4e957fc1b07a0d72837e7bf3955babaf72b",
+    "object": "Q52219392",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "8dd176682b1bc4b4a94af0b362bf28f92edfc4c1": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "8dd176682b1bc4b4a94af0b362bf28f92edfc4c1",
+    "object": "Q60036404",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "8f6ed2c078c20b60de556a3e9054804e445181bd": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "8f6ed2c078c20b60de556a3e9054804e445181bd",
+    "object": "Q41849",
+    "predicate": "parent_of",
+    "subject": "Q41610"
+  },
+  "90e0a40f12b1225128313c86947bfe3e4e0b56b5": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "90e0a40f12b1225128313c86947bfe3e4e0b56b5",
+    "object": "Q232714",
+    "predicate": "parent_of",
+    "subject": "Q513495"
+  },
+  "9177d6634922c305df3ca993bdfa07b3b089fe7b": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "9177d6634922c305df3ca993bdfa07b3b089fe7b",
+    "object": "Q1219238",
+    "predicate": "parent_of",
+    "subject": "Q392653"
+  },
+  "9380c245d9e444477bc9620b6d23ce83a9a2c1f3": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "9380c245d9e444477bc9620b6d23ce83a9a2c1f3",
+    "object": "Q20498724",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "9973775eaee69d47c5cbed09b8906eb64f3318c2": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "9973775eaee69d47c5cbed09b8906eb64f3318c2",
+    "object": "Q246434",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "a19ae8308b499b31528658956b3a1d60dfb6dab7": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "a19ae8308b499b31528658956b3a1d60dfb6dab7",
+    "object": "Q41628",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "a9c5282c7791e84b16fb2d44b54d52e3bc63ee23": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "a9c5282c7791e84b16fb2d44b54d52e3bc63ee23",
+    "object": "Q232714",
+    "predicate": "parent_of",
+    "subject": "Q3292878"
+  },
+  "aadd716c032215d6d9a14577b68d8937ad184ca5": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "aadd716c032215d6d9a14577b68d8937ad184ca5",
+    "object": "Q28729593",
+    "predicate": "parent_of",
+    "subject": "Q232714"
+  },
+  "ab2535e6c4f5fb403afcd08ccb9c0c0985beceb1": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "ab2535e6c4f5fb403afcd08ccb9c0c0985beceb1",
+    "object": "Q12296185",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "ac08a0cf0fcf9a2d9676b0745417aa3f615cb22c": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "ac08a0cf0fcf9a2d9676b0745417aa3f615cb22c",
+    "object": "Q41628",
+    "predicate": "parent_of",
+    "subject": "Q232714"
+  },
+  "aef4f09c0c4fee98b626be106f6381bb867c2eaa": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "aef4f09c0c4fee98b626be106f6381bb867c2eaa",
+    "object": "Q90040312",
+    "predicate": "parent_of",
+    "subject": "Q6752551"
+  },
+  "b43509270114c0999f6ac1b14c6910df4401a84d": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "b43509270114c0999f6ac1b14c6910df4401a84d",
+    "object": "Q60036404",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "b800dc3fec41eece40cafa326e5de77b30e64a3f": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "b800dc3fec41eece40cafa326e5de77b30e64a3f",
+    "object": "Q131568681",
+    "predicate": "parent_of",
+    "subject": "Q179284"
+  },
+  "c77fde675a7631ecb3b54c0537a2ef0fb29b1022": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "c77fde675a7631ecb3b54c0537a2ef0fb29b1022",
+    "object": "Q80465480",
+    "predicate": "parent_of",
+    "subject": "Q179284"
+  },
+  "c829f639f40498ca7ab7e72fb60d454f23441b9c": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "c829f639f40498ca7ab7e72fb60d454f23441b9c",
+    "object": "Q1226606",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "ca59f5dde1d40ccca1f4f9a6621994b30a0d44e6": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "ca59f5dde1d40ccca1f4f9a6621994b30a0d44e6",
+    "object": "Q12900494",
+    "predicate": "parent_of",
+    "subject": "Q41830"
+  },
+  "db1177aa309832181b73cf9a9a78b4195f85a128": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "db1177aa309832181b73cf9a9a78b4195f85a128",
+    "object": "Q41600",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "e0a995560975c8e995ba0fbf395975c241b09c08": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e0a995560975c8e995ba0fbf395975c241b09c08",
+    "object": "Q41610",
+    "predicate": "parent_of",
+    "subject": "Q82691"
+  },
+  "e300d25e8a8b04be570517516df915fda669e374": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e300d25e8a8b04be570517516df915fda669e374",
+    "object": "Q765682",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "e34446f1ea7916636def000c9736cbc74d8243d4": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e34446f1ea7916636def000c9736cbc74d8243d4",
+    "object": "Q765682",
+    "predicate": "parent_of",
+    "subject": "Q232714"
+  },
+  "e67047d0be2cf69aec9a492860aaf64f6940ebad": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e67047d0be2cf69aec9a492860aaf64f6940ebad",
+    "object": "Q392653",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "e719f87285d1e506f0479a38a5e56d9cd168276e": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e719f87285d1e506f0479a38a5e56d9cd168276e",
+    "object": "Q12279392",
+    "predicate": "parent_of",
+    "subject": "Q41628"
+  },
+  "e9ba38ec28c9bad6b979f8fddc0511f2da97b6b1": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "e9ba38ec28c9bad6b979f8fddc0511f2da97b6b1",
+    "object": "Q641370",
+    "predicate": "parent_of",
+    "subject": "Q61570544"
+  },
+  "ec5737c29c88ec02f1ba36233b04e25a20192a8a": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "ec5737c29c88ec02f1ba36233b04e25a20192a8a",
+    "object": "Q130681251",
+    "predicate": "parent_of",
+    "subject": "Q179284"
+  },
+  "f5e700937d2013b920828ef60b1726b77dc36ca0": {
+    "extensions": {
+      "psellos": {
+        "layer": "editorial_demo",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "f5e700937d2013b920828ef60b1726b77dc36ca0",
+    "object": "Q240604",
+    "predicate": "parent_of",
+    "subject": "Q238609"
+  },
+  "f6315a459296310a13daebd0642c6088bf5d7c82": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "f6315a459296310a13daebd0642c6088bf5d7c82",
+    "object": "Q12286002",
+    "predicate": "parent_of",
+    "subject": "Q41600"
+  },
+  "f99701911cb6899521bd86e1ef725ca1c47927b0": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "f99701911cb6899521bd86e1ef725ca1c47927b0",
+    "object": "Q3286784",
+    "predicate": "parent_of",
+    "subject": "Q3767041"
+  },
+  "fae91dca3b4996918422e6eea4b87ba879762fce": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "fae91dca3b4996918422e6eea4b87ba879762fce",
+    "object": "Q12296185",
+    "predicate": "parent_of",
+    "subject": "Q641370"
+  },
+  "fdfef8df810823a8813e61ab3b8f4a94dcbbfdcd": {
+    "extensions": {
+      "psellos": {
+        "layer": "canon",
+        "rel": "genealogy",
+        "source": "wikidata"
+      }
+    },
+    "id": "fdfef8df810823a8813e61ab3b8f4a94dcbbfdcd",
+    "object": "Q1227872",
+    "predicate": "parent_of",
+    "subject": "Q41628"
   }
 }
